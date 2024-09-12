@@ -1,5 +1,25 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Explore from "./pages/Explore";
+import Signup from "./pages/Signup";
+import Offers from "./pages/Offers";
+import Profile from "./pages/Profile";
+import Signin from "./pages/Signin";
+import ForgotPassword from "./pages/ForgotPassword";
 function App() {
-  return <>My app</>;
+  return (
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Explore />} />
+          <Route path="/offers" element={<Offers />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/signin" element={<Signin />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+        </Routes>
+      </Router>
+    </>
+  );
 }
 
 export default App;
