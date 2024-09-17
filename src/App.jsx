@@ -3,7 +3,7 @@ import Navbar from "./components/Navbar";
 import Explore from "./pages/Explore";
 import Signup from "./pages/Signup";
 import Offers from "./pages/Offers";
-import Profile from "./pages/Profile";
+// import Profile from "./pages/Profile";
 import Signin from "./pages/Signin";
 import ForgotPassword from "./pages/ForgotPassword";
 function App() {

@@ -117,6 +117,10 @@ button {
   align-items: center;
 }
 
+.pageContainer {
+  margin-bottom: 10rem;
+}
+
 .loadingSpinner {
   width: 64px;
   height: 64px;
@@ -289,7 +293,7 @@ button {
 }
 
 .registerLink {
-  margin-top: 4rem;
+  margin-top: 2rem;
   color: #00cc66;
   font-weight: 600;
   text-align: center;
