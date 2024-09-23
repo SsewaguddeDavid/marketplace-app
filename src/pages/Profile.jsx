@@ -2,7 +2,7 @@ import { useState } from "react";
 import { getAuth, updateProfile } from "firebase/auth";
 import { updateDoc, doc } from "firebase/firestore";
 import { db } from "../firebase.config";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 const Profile = () => {
   const auth = getAuth();
@@ -41,9 +41,9 @@ const Profile = () => {
     <div className="profile">
       <header className="profileHeader">
         <p className="pageHeader">My Profile</p>
-        <buttton className="logOut" type="button" onClick={onLogOut}>
+        <button className="logOut" type="button" onClick={onLogOut}>
           Logout
-        </buttton>
+        </button>
       </header>
       <main>
         <div className="profileDetailsHeader">
