@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import Spinner from "../components/Spinner";
+import { toast } from "react-toastify";
 
 const CreateListing = () => {
   const [geolocationEnabled, setGeolocationEnabled] = useState(true);
@@ -60,6 +61,80 @@ const CreateListing = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted]);
 
+  const onSubmit = async (e) => {
+    e.preventDefault();
+    // console.log(formData);
+    setLoading(true);
+    if (discountedPrice >= regularPrice) {
+      setLoading(false);
+      toast.error("Discounted price needs to be less than regular price");
+      return;
+    }
+
+    if (images.length > 6) {
+      setLoading(false);
+      toast.error("Max 6 images required");
+      return;
+    }
+
+    let geolocation = {};
+    let location;
+
+    if (geolocationEnabled) {
+      const response = await fetch(
+        `https://maps.googleapis.com/maps/api/geocode/json?address=${address}&key=${
+          import.meta.env.VITE_GEOCODE_API_KEY
+        }`
+      );
+
+      const data = await response.json();
+
+      geolocation.lat = data.results[0]?.geometry.location.lat ?? 0;
+      geolocation.lng = data.results[0]?.geometry.location.lng ?? 0;
+      console.log(data);
+
+      location =
+        data.status === "ZERO_RESULTS"
+          ? undefined
+          : data.results[0]?.formatted_address;
+
+      if (location === undefined || location.includes("undefined")) {
+        setLoading(false);
+        toast.error("Please enter a correct address");
+        return;
+      }
+    } else {
+      geolocation.lat = latitude;
+      geolocation.lng = longitude;
+      location = address;
+    }
+
+    setLoading(false);
+  };
+
+  const handleChange = (e) => {
+    let boolean = null;
+
+    if (e.target.value === "true") {
+      boolean = true;
+    }
+    if (e.target.value === "false") {
+      boolean = false;
+    }
+
+    // Files
+    if (e.target.files) {
+      setFormData((prevState) => ({ ...prevState, images: e.target.files }));
+    }
+
+    // Text/Boolean/Numbers
+    if (!e.target.files) {
+      setFormData((prevState) => ({
+        ...prevState,
+        [e.target.id]: boolean ?? e.target.value,
+      }));
+    }
+  };
   if (loading) {
     return <Spinner />;
   }
@@ -77,7 +152,7 @@ const CreateListing = () => {
               className={type === "sale" ? "formButtonActive" : "formButton"}
               id="type"
               value="sale"
-              onClick={onMutate}
+              onClick={handleChange}
             >
               Sell
             </button>
@@ -86,7 +161,7 @@ const CreateListing = () => {
               className={type === "rent" ? "formButtonActive" : "formButton"}
               id="type"
               value="rent"
-              onClick={onMutate}
+              onClick={handleChange}
             >
               Rent
             </button>
@@ -98,7 +173,7 @@ const CreateListing = () => {
             type="text"
             id="name"
             value={name}
-            onChange={onMutate}
+            onChange={handleChange}
             maxLength="32"
             minLength="10"
             required
@@ -112,7 +187,7 @@ const CreateListing = () => {
                 type="number"
                 id="bedrooms"
                 value={bedrooms}
-                onChange={onMutate}
+                onChange={handleChange}
                 min="1"
                 max="50"
                 required
@@ -125,7 +200,7 @@ const CreateListing = () => {
                 type="number"
                 id="bathrooms"
                 value={bathrooms}
-                onChange={onMutate}
+                onChange={handleChange}
                 min="1"
                 max="50"
                 required
@@ -140,7 +215,7 @@ const CreateListing = () => {
               type="button"
               id="parking"
               value={true}
-              onClick={onMutate}
+              onClick={handleChange}
               min="1"
               max="50"
             >
@@ -153,7 +228,7 @@ const CreateListing = () => {
               type="button"
               id="parking"
               value={false}
-              onClick={onMutate}
+              onClick={handleChange}
             >
               No
             </button>
@@ -166,7 +241,7 @@ const CreateListing = () => {
               type="button"
               id="furnished"
               value={true}
-              onClick={onMutate}
+              onClick={handleChange}
             >
               Yes
             </button>
@@ -179,7 +254,7 @@ const CreateListing = () => {
               type="button"
               id="furnished"
               value={false}
-              onClick={onMutate}
+              onClick={handleChange}
             >
               No
             </button>
@@ -191,7 +266,7 @@ const CreateListing = () => {
             type="text"
             id="address"
             value={address}
-            onChange={onMutate}
+            onChange={handleChange}
             required
           />
 
@@ -204,7 +279,7 @@ const CreateListing = () => {
                   type="number"
                   id="latitude"
                   value={latitude}
-                  onChange={onMutate}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -215,7 +290,7 @@ const CreateListing = () => {
                   type="number"
                   id="longitude"
                   value={longitude}
-                  onChange={onMutate}
+                  onChange={handleChange}
                   required
                 />
               </div>
@@ -229,7 +304,7 @@ const CreateListing = () => {
               type="button"
               id="offer"
               value={true}
-              onClick={onMutate}
+              onClick={handleChange}
             >
               Yes
             </button>
@@ -240,7 +315,7 @@ const CreateListing = () => {
               type="button"
               id="offer"
               value={false}
-              onClick={onMutate}
+              onClick={handleChange}
             >
               No
             </button>
@@ -253,7 +328,7 @@ const CreateListing = () => {
               type="number"
               id="regularPrice"
               value={regularPrice}
-              onChange={onMutate}
+              onChange={handleChange}
               min="50"
               max="750000000"
               required
@@ -269,7 +344,7 @@ const CreateListing = () => {
                 type="number"
                 id="discountedPrice"
                 value={discountedPrice}
-                onChange={onMutate}
+                onChange={handleChange}
                 min="50"
                 max="750000000"
                 required={offer}
@@ -285,7 +360,7 @@ const CreateListing = () => {
             className="formInputFile"
             type="file"
             id="images"
-            onChange={onMutate}
+            onChange={handleChange}
             max="6"
             accept=".jpg,.png,.jpeg"
             multiple
